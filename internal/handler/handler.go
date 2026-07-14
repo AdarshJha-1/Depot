@@ -31,9 +31,7 @@ func HandlerUpload() http.HandlerFunc {
 			return
 		}
 
-		// http.DetectContentType()
-
-		file, handler, err := r.FormFile("img")
+		file, _, err := r.FormFile("img")
 		if err != nil {
 			http.Error(w, "error retrieving the file", http.StatusBadRequest)
 			return
@@ -54,7 +52,6 @@ func HandlerUpload() http.HandlerFunc {
 			"image/jpeg": true,
 			"image/png":  true,
 			"image/webp": true,
-			"image/gif":  true,
 		}
 
 		if !allowed[contentType] {
@@ -68,7 +65,14 @@ func HandlerUpload() http.HandlerFunc {
 			return
 		}
 
-		ext := filepath.Ext(handler.Filename)
+		extensions := map[string]string{
+			"image/jpeg": ".jpg",
+			"image/png":  ".png",
+			"image/webp": ".webp",
+		}
+
+		ext := extensions[contentType]
+
 		fileName := uuid.NewString() + ext
 
 		err = os.MkdirAll(uploadDir, os.ModePerm)
@@ -97,7 +101,7 @@ func HandlerUpload() http.HandlerFunc {
 
 		fmt.Fprintf(w, `
 			<div class="result-card">
-				<h3>✅ Upload Successful</h3>
+				<h3>✅ uuUpload Successful</h3>
 
 				<p>
 					<a href="%s" target="_blank">%s</a>
